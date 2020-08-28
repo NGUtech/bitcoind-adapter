@@ -2839,12 +2839,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NGUtech/bitcoin-interop.git",
-                "reference": "c71efb15524d0fcddedce6dd47fc4130094a2373"
+                "reference": "f6d43debdd7a758f21c0b9bdb627df04cbe045c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NGUtech/bitcoin-interop/zipball/c71efb15524d0fcddedce6dd47fc4130094a2373",
-                "reference": "c71efb15524d0fcddedce6dd47fc4130094a2373",
+                "url": "https://api.github.com/repos/NGUtech/bitcoin-interop/zipball/f6d43debdd7a758f21c0b9bdb627df04cbe045c1",
+                "reference": "f6d43debdd7a758f21c0b9bdb627df04cbe045c1",
                 "shasum": ""
             },
             "require": {
@@ -2881,7 +2881,7 @@
                 "interop",
                 "transaction"
             ],
-            "time": "2020-08-27T18:34:10+00:00"
+            "time": "2020-08-28T23:49:56+00:00"
         },
         {
             "name": "paragonie/random_compat",
