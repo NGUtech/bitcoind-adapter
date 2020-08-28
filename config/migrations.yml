@@ -1,0 +1,19 @@
+migration_loaders:
+  bitcoind.adapter.message_queue:
+    class: Daikon\Flysystem\Migration\FlysystemMigrationLoader
+    connector: bitcoind.adapter.filesystem
+    settings:
+      location: migration://rabbitmq
+
+migration_adapters:
+  bitcoind.adapter.message_queue:
+    class: Daikon\RabbitMq3\Migration\RabbitMq3MigrationAdapter
+    connector: bitcoind.adapter.message_queue.admin
+    settings:
+      exchange: bitcoind.adapter.migration_list
+
+migration_targets:
+  bitcoind.adapter.message_queue:
+    enabled: true
+    migration_adapter: bitcoind.adapter.message_queue
+    migration_loader: bitcoind.adapter.message_queue

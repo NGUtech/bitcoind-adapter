@@ -1,0 +1,17 @@
+bitcoind.adapter.filesystem:
+  connector: daikon.filesystem
+  settings:
+    mounts:
+      migration:
+        adapter: League\Flysystem\Adapter\Local
+        location: ${crates.bitcoind.adapter.migration_dir}
+
+bitcoind.adapter.message_queue:
+  connector: daikon.message_queue
+
+bitcoind.adapter.message_queue.admin:
+  connector: daikon.message_queue.admin
+
+bitcoind.adapter.rpc:
+  class: NGUtech\Bitcoind\Connector\BitcoindRpcConnector
+  settings: ${crates.bitcoind.adapter.connectors.rpc}

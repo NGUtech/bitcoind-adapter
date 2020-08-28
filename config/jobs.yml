@@ -1,0 +1,5 @@
+job_workers:
+  bitcoind.adapter.message_queue:
+    class: NGUtech\Bitcoind\Message\BitcoindMessageWorker
+    dependencies:
+      connector: bitcoind.adapter.message_queue

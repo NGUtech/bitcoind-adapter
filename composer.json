@@ -1,0 +1,67 @@
+{
+    "name": "ngutech/bitcoind-adapter",
+    "type": "library",
+    "description": "Bitcoind service adapter for Daikon-CQRS projects.",
+    "keywords": [ "bitcoin", "bitcoind", "adapter" ],
+    "homepage": "https://github.com/ngutech/bitcoin-interop",
+    "license": "MPL-2.0",
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:MrHash/whoops-middleware.git"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "bitwasp/bitcoin": "^1.0",
+        "daikon/async-job": "master@dev",
+        "daikon/boot": "master@dev",
+        "daikon/dbal": "master@dev",
+        "daikon/interop": "master@dev",
+        "daikon/message-bus": "master@dev",
+        "daikon/money-interop": "master@dev",
+        "daikon/rabbitmq3-adapter": "master@dev",
+        "daikon/value-object": "master@dev",
+        "denpa/php-bitcoinrpc": "^2.1",
+        "ngutech/bitcoin-interop": "master@dev",
+        "php-amqplib/php-amqplib": "^2.8",
+        "psr/log": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.3",
+        "sebastian/phpcpd": "^6.0",
+        "squizlabs/php_codesniffer": "^3.3",
+        "vimeo/psalm": "^3.0"
+    },
+    "autoload": {
+        "psr-4": { "NGUtech\\Bitcoind\\" : "src" }
+    },
+    "autoload-dev": {
+        "psr-4": { "NGUtech\\Tests\\Bitcoind\\": "tests" }
+    },
+    "archive": {
+        "exclude": [
+            "/build",
+            "/vendor"
+        ]
+    },
+    "scripts": {
+        "build": [ "@sniff", "@tests" ],
+        "code-sniffer-autofix": "phpcbf --standard=PSR2 -d tabWidth=4 src tests",
+        "code-sniffer": "phpcs -p -s --extensions=php --standard='PSR1,PSR2' src tests",
+        "copy-paste-detector": "phpcpd src tests || true",
+        "psalm": "psalm --shepherd --show-info=true",
+        "sniff": [
+            "@code-sniffer",
+            "@copy-paste-detector",
+            "@validate-json",
+            "@psalm"
+        ],
+        "test": "phpunit --no-coverage",
+        "tests": "phpunit",
+        "validate-deps": "composer validate --with-dependencies --strict",
+        "validate-json": "composer validate --no-check-all --no-check-lock"
+    }
+}
