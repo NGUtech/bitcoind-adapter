@@ -3,16 +3,10 @@
     "type": "library",
     "description": "Bitcoind service adapter for Daikon-CQRS projects.",
     "keywords": [ "bitcoin", "bitcoind", "adapter" ],
-    "homepage": "https://github.com/ngutech/bitcoin-interop",
+    "homepage": "https://github.com/ngutech/bitcoind-adapter",
     "license": "MPL-2.0",
     "prefer-stable": true,
     "minimum-stability": "dev",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:MrHash/whoops-middleware.git"
-        }
-    ],
     "require": {
         "php": "^7.4",
         "bitwasp/bitcoin": "^1.0",
