@@ -69,35 +69,29 @@ final class BitcoindMessageWorker implements WorkerInterface
 
     private function execute(AMQPMessage $amqpMessage): void
     {
-        $deliveryInfo = $amqpMessage->delivery_info;
-        /** @var AMQPChannel $channel */
-        $channel = $deliveryInfo['channel'];
-        $deliveryTag = $deliveryInfo['delivery_tag'];
-        $routingKey = $deliveryInfo['routing_key'];
-
         try {
-            $message = $this->createMessage($routingKey, $amqpMessage);
+            $message = $this->createMessage($amqpMessage);
             if ($message instanceof BitcoinMessageInterface) {
                 $this->messageBus->publish($message, MessageBusProvisioner::EVENTS_CHANNEL);
             }
-            $channel->basic_ack($deliveryTag);
+            $amqpMessage->ack();
         } catch (RuntimeException $error) {
             $this->logger->error(
-                "Error handling bitcoind message '$routingKey'.",
+                "Error handling bitcoind message '{$amqpMessage->getRoutingKey()}'.",
                 ['exception' => $error->getTrace()]
             );
-            $channel->basic_nack($deliveryTag, false, false);
+            $amqpMessage->nack();
         }
     }
 
-    private function createMessage(string $messageType, AMQPMessage $amqpMessage): ?BitcoinMessageInterface
+    private function createMessage(AMQPMessage $amqpMessage): ?BitcoinMessageInterface
     {
         $payload = [
             'hash' => (new Buffer($amqpMessage->body))->getHex(),
             'receivedAt' => (string)Timestamp::fromTime($amqpMessage->get('timestamp'))
         ];
 
-        switch ($messageType) {
+        switch ($amqpMessage->getRoutingKey()) {
             case self::MESSAGE_TRANSACTION_HASH:
                 $message = BitcoinTransactionHashReceived::fromNative($payload);
                 break;
