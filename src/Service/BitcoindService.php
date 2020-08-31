@@ -24,6 +24,8 @@ use NGUtech\Bitcoin\Service\SatoshiCurrencies;
 use NGUtech\Bitcoin\ValueObject\Address;
 use NGUtech\Bitcoin\ValueObject\Bitcoin;
 use NGUtech\Bitcoin\ValueObject\Hash;
+use NGUtech\Bitcoin\ValueObject\Output;
+use NGUtech\Bitcoin\ValueObject\OutputList;
 use NGUtech\Bitcoind\Connector\BitcoindRpcConnector;
 use Psr\Log\LoggerInterface;
 
@@ -62,7 +64,7 @@ class BitcoindService implements BitcoinServiceInterface
         ]);
 
         return $transaction->withValues([
-            'address' => $result,
+            'outputs' => [['address' => $result, 'value' => (string)$transaction->getAmount()]],
             'confTarget' => $this->settings['request']['conf_target'] ?? 3
         ]);
     }
@@ -120,10 +122,12 @@ class BitcoindService implements BitcoinServiceInterface
             throw $error;
         }
 
+        $outputs = $this->makeOutputList($result['details']);
+
         return BitcoinTransaction::fromNative([
             'id' => $result['txid'],
-            // 'amount' => $result['details'].send.amount,
-            // 'address' => $result['details'].send.address,
+            'amount' => (string)$outputs->getTotal(),
+            'outputs' => $outputs->toNative(),
             'confirmations' => $result['confirmations'],
             'feeSettled' => $this->convert(ltrim($result['fee'], '-').BitcoinCurrencies::BTC),
             'rbf' => $result['bip125-replaceable'] === 'yes'
@@ -183,7 +187,7 @@ class BitcoindService implements BitcoinServiceInterface
 
     protected function convert(string $amount, string $currency = SatoshiCurrencies::MSAT): Bitcoin
     {
-        return $this->moneyService->convert($this->moneyService->parse($amount ?? '0'.$currency), $currency);
+        return $this->moneyService->convert($this->moneyService->parse($amount), $currency);
     }
 
     protected function createFundedTransaction(BitcoinTransaction $transaction): array
@@ -191,7 +195,12 @@ class BitcoindService implements BitcoinServiceInterface
         //@todo coin control in an async context
         $rawTransaction = $this->call('createrawtransaction', [
             [],
-            [(string)$transaction->getAddress() => $this->formatForRpc($transaction->getAmount())],
+            array_map(
+                fn(Output $output): array => [
+                    (string)$output->getAddress() => $this->formatForRpc($output->getValue())
+                ],
+                $transaction->getOutputs()->unwrap()
+            ),
             0,
             $this->settings['send']['rbf'] ?? true
         ]);
@@ -207,5 +216,20 @@ class BitcoindService implements BitcoinServiceInterface
         return preg_replace('/[^\d\.]/', '', $this->moneyService->format(
             $this->convert((string)$bitcoin, BitcoinCurrencies::BTC)
         ));
+    }
+
+    protected function makeOutputList(array $details): OutputList
+    {
+        return OutputList::fromNative(
+            array_reduce($details, function (array $carry, array $entry): array {
+                if ($entry['category'] === 'send') {
+                    $carry[] = [
+                        'address' => $entry['address'],
+                        'value' => (string)$this->convert(ltrim($entry['amount'], '-').BitcoinCurrencies::BTC)
+                    ];
+                }
+                return $carry;
+            }, [])
+        );
     }
 }

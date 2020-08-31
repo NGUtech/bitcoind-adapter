@@ -9,7 +9,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^7.4",
-        "bitwasp/bitcoin": "^1.0",
+        "bitwasp/buffertools": "^0.5",
         "daikon/async-job": "master@dev",
         "daikon/boot": "master@dev",
         "daikon/dbal": "master@dev",
