@@ -13,6 +13,7 @@ use Daikon\Money\Exception\PaymentServiceFailed;
 use Daikon\Money\Exception\PaymentServiceUnavailable;
 use Daikon\Money\Service\MoneyServiceInterface;
 use Daikon\Money\ValueObject\MoneyInterface;
+use Daikon\ValueObject\Natural;
 use Denpa\Bitcoin\Client;
 use Denpa\Bitcoin\Exceptions\BadRemoteCallException;
 use Denpa\Bitcoin\Responses\BitcoindResponse;
@@ -134,10 +135,9 @@ class BitcoindService implements BitcoinServiceInterface
         ]);
     }
 
-    public function getConfirmedBalance(Address $address): Bitcoin
+    public function getConfirmedBalance(Address $address, Natural $confirmations): Bitcoin
     {
-        $confTarget = $this->settings['request']['conf_target'] ?? 3;
-        $result = $this->call('listreceivedbyaddress', [$confTarget, false, false, (string)$address]);
+        $result = $this->call('listreceivedbyaddress', [$confirmations->toNative(), false, false, (string)$address]);
         return $this->convert(($result[0]['amount'] ?? '0').BitcoinCurrencies::BTC);
     }
 
