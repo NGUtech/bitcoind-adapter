@@ -145,9 +145,9 @@ class BitcoindService implements BitcoinServiceInterface
     {
         return ($this->settings['request']['enabled'] ?? true)
             && $amount->isGreaterThanOrEqual(
-                $this->convert(($this->settings['request']['minimum'] ?? '1'.SatoshiCurrencies::SAT))
+                $this->convert(($this->settings['request']['minimum'] ?? BitcoinTransaction::AMOUNT_MIN))
             ) && $amount->isLessThanOrEqual(
-                $this->convert(($this->settings['request']['maximum'] ?? '21000000'.BitcoinCurrencies::BTC))
+                $this->convert(($this->settings['request']['maximum'] ?? BitcoinTransaction::AMOUNT_MAX))
             );
     }
 
@@ -155,7 +155,9 @@ class BitcoindService implements BitcoinServiceInterface
     {
         return ($this->settings['send']['enabled'] ?? true)
             && $amount->isGreaterThanOrEqual(
-                $this->convert(($this->settings['send']['minimum'] ?? '1'.SatoshiCurrencies::SAT))
+                $this->convert(($this->settings['send']['minimum'] ?? BitcoinTransaction::AMOUNT_MIN))
+            ) && $amount->isLessThanOrEqual(
+                $this->convert(($this->settings['send']['maximum'] ?? BitcoinTransaction::AMOUNT_MAX))
             );
     }
 
